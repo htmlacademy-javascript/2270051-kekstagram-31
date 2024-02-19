@@ -29,18 +29,15 @@ console.log(`А роза упала на лапу Азора: ${getPalindrome('�
 // Если в строке нет ни одной цифры, функция должна вернуть NaN
 
 const getNumber = (data) => {
-  const stringOfNumbers = '0123456789';
-  let result = '';
   data = data.toString();
+  let result = '';
   for (let i = 0; i < data.length; i++) {
-    for (let j = 0; j < stringOfNumbers.length; j++) {
-      if (data[i] !== stringOfNumbers[j]) {
-        continue;
-      }
-      result += data[i];
+    // eslint-disable-next-line radix
+    const iData = parseInt(data[i]);
+    if (!Number.isNaN(iData)) {
+      result += iData;
     }
   }
-
   if (result === '') {
     return NaN;
   }
