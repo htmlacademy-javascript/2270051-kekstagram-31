@@ -45,14 +45,14 @@ let globalCommentId = 0;
 const createCommentId = () => {
   globalCommentId++;
   return globalCommentId;
-}
+};
 
 // функция получения уникального ID для фото
 let globalPhotoId = 0;
 const createPhotoId = () => {
   globalPhotoId++;
   return globalPhotoId;
-}
+};
 
 // функция, которая будет создавать комментарий
 const generateComment = () => {
