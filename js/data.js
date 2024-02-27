@@ -46,7 +46,7 @@ const initId = () => {
     id++;
     return id;
   };
-}
+};
 
 // создание новых групп Id
 const getNextCommentId = initId();
