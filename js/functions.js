@@ -53,3 +53,27 @@ console.log(`2023: ${getNumber(2023)}`);
 console.log(`-1: ${getNumber(-1)}`);
 console.log(`1.5: ${getNumber(1.5)}`);
 
+
+// Делу — время
+// Функция преобразования строки в минуты
+const convertTimeToNumber = (timeString) => {
+  const timeParts = timeString.split(':');
+  const hours = parseInt(timeParts[0], 10);
+  const minutes = parseInt(timeParts[1], 10);
+  return hours * 60 + minutes;
+};
+
+// Функция проверки, что встреча не выходит за рамки рабочего дня
+const isEnoughTime = (startDay, endDay, startMeeting, meetingDuration) => {
+  const startDayInMinutes = convertTimeToNumber(startDay);
+  const endDayInMinutes = convertTimeToNumber(endDay);
+  const startMeetingInMinutes = convertTimeToNumber(startMeeting);
+  return startMeetingInMinutes >= startDayInMinutes && (endDayInMinutes - startMeetingInMinutes) >= meetingDuration;
+};
+
+console.log(isEnoughTime('08:00', '17:30', '14:00', 90));
+console.log(isEnoughTime('8:0', '10:0', '8:0', 120));
+console.log(isEnoughTime('08:00', '14:30', '14:00', 90));
+console.log(isEnoughTime('14:00', '17:30', '08:0', 90));
+console.log(isEnoughTime('8:00', '17:30', '08:00', 900));
+
