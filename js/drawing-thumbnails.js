@@ -1,4 +1,4 @@
-import {createPhotos} from './data.js';
+import {createPhotos} from './create-photos.js';
 
 // получаем секцию для вставки фотографий
 const pictures = document.querySelector('.pictures');
