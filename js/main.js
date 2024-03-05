@@ -1,1 +1,1 @@
-import './drawing-thumbnails.js';
+import './drawing-full-size-image';

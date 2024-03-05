@@ -28,5 +28,6 @@ photos.forEach((photo) => {
 });
 
 // из фрагмента отрисовываем фотографии на страницу
-pictures.appendChild(photosFragment);
+pictures.append(photosFragment);
 
+export {pictures, photos};
