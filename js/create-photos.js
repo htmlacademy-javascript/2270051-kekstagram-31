@@ -52,4 +52,4 @@ const generatePhoto = () => {
 // создание массива фотографий
 const createPhotos = () => Array.from({ length: PHOTO_DESCRIPTION_COUNT }, generatePhoto);
 
-export {createPhotos};
+export {createPhotos, generatePhoto};
