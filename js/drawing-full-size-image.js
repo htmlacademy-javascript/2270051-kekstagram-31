@@ -19,6 +19,42 @@ const onDocumentKeydown = (evt) => {
   }
 };
 
+let onBigPictureLoadMoreButton; // переменная для обработчика нажатия "Загрузить еще"
+let shownCommentsCount = 0; // количество комментариев, которые были добавлены в последний раз
+
+// функция для добавления комментариев
+const addComments = (photo) => {
+  const totalCommentsCount = photo.comments.length;
+  const commentsToShow = photo.comments.slice(shownCommentsCount, shownCommentsCount + 5);
+
+  // создаем комментарии
+  commentsToShow.forEach((comment) => {
+    const commentElement = document.createElement('li');
+    commentElement.classList.add('social__comment');
+    const commentAvatar = document.createElement('img');
+    commentAvatar.classList.add('social__picture');
+    commentAvatar.src = comment.avatar;
+    commentAvatar.alt = comment.name;
+    commentAvatar.width = 35;
+    commentAvatar.height = 35;
+    const commentText = document.createElement('p');
+    commentText.classList.add('social__text');
+    commentText.textContent = comment.message;
+    commentElement.appendChild(commentAvatar);
+    commentElement.appendChild(commentText);
+    bigPictureCommentsList.appendChild(commentElement);
+  });
+
+  shownCommentsCount += commentsToShow.length;
+  bigPictureCommentShownCount.textContent = shownCommentsCount.toString();
+
+  if (shownCommentsCount >= totalCommentsCount) {
+    bigPictureLoadMoreButton.classList.add('hidden');
+  } else {
+    bigPictureLoadMoreButton.classList.remove('hidden');
+  }
+};
+
 // функция открывает большое изображение, создает комментарии и добавляет обработчик нажатия клавиши Esc для закрытия большого изображения
 function openBigPicture(photo) {
   bigPicture.classList.remove('hidden');
@@ -30,48 +66,15 @@ function openBigPicture(photo) {
   bigPictureLikesCount.textContent = photo.likes;
   bigPictureCommentTotalCount.textContent = photo.comments.length.toString();
 
-  let shownCommentsCount = 0; // количество комментариев, которые были добавлены в последний раз
-  const totalCommentsCount = photo.comments.length;
-
-  // функция для добавления комментариев
-  const addComments = () => {
-    const commentsToShow = photo.comments.slice(shownCommentsCount, shownCommentsCount + 5);
-
-    // создаем комментарии
-    commentsToShow.forEach((comment) => {
-      const commentElement = document.createElement('li');
-      commentElement.classList.add('social__comment');
-      const commentAvatar = document.createElement('img');
-      commentAvatar.classList.add('social__picture');
-      commentAvatar.src = comment.avatar;
-      commentAvatar.alt = comment.name;
-      commentAvatar.width = 35;
-      commentAvatar.height = 35;
-      const commentText = document.createElement('p');
-      commentText.classList.add('social__text');
-      commentText.textContent = comment.message;
-      commentElement.appendChild(commentAvatar);
-      commentElement.appendChild(commentText);
-      bigPictureCommentsList.appendChild(commentElement);
-    });
-
-    shownCommentsCount += commentsToShow.length;
-    bigPictureCommentShownCount.textContent = shownCommentsCount.toString();
-
-    if (shownCommentsCount >= totalCommentsCount) {
-      bigPictureLoadMoreButton.classList.add('hidden');
-    } else {
-      bigPictureLoadMoreButton.classList.remove('hidden');
-    }
-  };
+  onBigPictureLoadMoreButton = () => {
+    addComments(photo);
+  }
 
   // добавляем первые 5 комментариев
-  addComments();
+  addComments(photo);
 
   // обработчик нажатия на кнопку "Загрузить ещё"
-  bigPictureLoadMoreButton.addEventListener('click', () => {
-    addComments();
-  });
+  bigPictureLoadMoreButton.addEventListener('click', onBigPictureLoadMoreButton);
 
   // закрывает окно с большой картинкой по нажатию клавиши Esc
   document.addEventListener('keydown', onDocumentKeydown);
@@ -83,8 +86,13 @@ function closeBigPicture() {
   bigPictureCommentsList.textContent = '';
   document.body.classList.remove('modal-open');
 
+  // удаляем обработчик нажатия на кнопку "Загрузить ещё"
+  bigPictureLoadMoreButton.removeEventListener('click', onBigPictureLoadMoreButton);
+
   // удаляем обработчик нажатия клавиши Esc
   document.removeEventListener('keydown', onDocumentKeydown);
+
+  shownCommentsCount = 0;
 }
 
 // открывает окно с большой картинкой по нажатию на превью
