@@ -15,6 +15,7 @@ const btnClosePicture = bigPicture.querySelector('.big-picture__cancel'); // к�
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
+    // eslint-disable-next-line no-use-before-define
     closeBigPicture();
   }
 };
@@ -56,7 +57,7 @@ const addComments = (photo) => {
 };
 
 // функция открывает большое изображение, создает комментарии и добавляет обработчик нажатия клавиши Esc для закрытия большого изображения
-function openBigPicture(photo) {
+const openBigPicture = (photo) => {
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
 
@@ -68,32 +69,22 @@ function openBigPicture(photo) {
 
   onBigPictureLoadMoreButton = () => {
     addComments(photo);
-  }
+  };
 
-  // добавляем первые 5 комментариев
-  addComments(photo);
-
-  // обработчик нажатия на кнопку "Загрузить ещё"
-  bigPictureLoadMoreButton.addEventListener('click', onBigPictureLoadMoreButton);
-
-  // закрывает окно с большой картинкой по нажатию клавиши Esc
-  document.addEventListener('keydown', onDocumentKeydown);
-}
+  addComments(photo); // добавляем первые 5 комментариев
+  bigPictureLoadMoreButton.addEventListener('click', onBigPictureLoadMoreButton); // обработчик нажатия на кнопку "Загрузить ещё"
+  document.addEventListener('keydown', onDocumentKeydown); // закрывает окно с большой картинкой по нажатию клавиши Esc
+};
 
 // функция скрывает большое изображение и очищает комментарии
-function closeBigPicture() {
+const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   bigPictureCommentsList.textContent = '';
   document.body.classList.remove('modal-open');
-
-  // удаляем обработчик нажатия на кнопку "Загрузить ещё"
-  bigPictureLoadMoreButton.removeEventListener('click', onBigPictureLoadMoreButton);
-
-  // удаляем обработчик нажатия клавиши Esc
-  document.removeEventListener('keydown', onDocumentKeydown);
-
+  bigPictureLoadMoreButton.removeEventListener('click', onBigPictureLoadMoreButton); // удаляем обработчик нажатия на кнопку "Загрузить ещё"
+  document.removeEventListener('keydown', onDocumentKeydown); // удаляем обработчик нажатия клавиши Esc
   shownCommentsCount = 0;
-}
+};
 
 // открывает окно с большой картинкой по нажатию на превью
 pictures.addEventListener('click', (evt) => {
