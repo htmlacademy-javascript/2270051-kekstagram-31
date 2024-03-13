@@ -1,17 +1,11 @@
-import {isEscapeKey} from "./util.js";
-
-const log = console.log;
+import {isEscapeKey} from './util.js';
 
 const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
 const uploadInput = document.querySelector('.img-upload__input'); // поле для загрузки фотографии
 const uploadOverlay = document.querySelector('.img-upload__overlay'); // модальное окно редактирования фотографии
-const uploadSubmit = document.querySelector('.img-upload__submit'); // кнопка для отправки данных на сервер
-
 const hashtagInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
-
 const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
-
 const regex = /^#[a-zа-яё0-9]{1,19}$/i;
 
 // обработчик нажатия клавиши Esc
@@ -22,6 +16,7 @@ const onDocumentKeydown = (evt) => {
       return; // если фокус находится в поле ввода хэштега или комментария, то форма не закроется
     }
     evt.preventDefault();
+    // eslint-disable-next-line no-use-before-define
     closeUploadForm();
   }
 };
@@ -29,33 +24,39 @@ const onDocumentKeydown = (evt) => {
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--error',
-  // successClass: 'form__item--valid',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
   errorTextClass: 'img-upload__field-wrapper--error',
 });
 
 const validateHashtag = (value) => {
-  if (!value) return true; // проверка на пустое значение
+  if (!value) {
+    return true; // проверка на пустое значение
+  }
   const hashtags = value.trim().split(' ');
 
   // удаление строк, состоящих только из пробелов
-  const hashtagsFiltered = hashtags.filter(hashtag => hashtag.trim() !== '');
-  log(hashtagsFiltered)
+  const hashtagsFiltered = hashtags.filter((hashtag) => hashtag.trim() !== '');
 
   // проверка на максимальное количество хэштегов
-  if (hashtagsFiltered.length > 5) return false;
+  if (hashtagsFiltered.length > 5) {
+    return false;
+  }
 
   // проверка на повторяющиеся хэштеги
   const uniqueHashtags = new Set(hashtagsFiltered);
-  if (hashtagsFiltered.length !== uniqueHashtags.size) return false;
+  if (hashtagsFiltered.length !== uniqueHashtags.size) {
+    return false;
+  }
 
   // проверка на правильный формат хэштега
-  for (let hashtag of hashtagsFiltered) {
-    if (!regex.test(hashtag)) return  false;
+  for (const hashtag of hashtagsFiltered) {
+    if (!regex.test(hashtag)) {
+      return false;
+    }
   }
   return true;
-}
+};
 
 pristine.addValidator(
   hashtagInput,
@@ -70,9 +71,7 @@ pristine.addValidator(
 
 pristine.addValidator(
   commentInput,
-  (value) => {
-    return value.length <= 140;
-  },
+  (value) => value.length <= 140,
   'Комментарий не может содержать более 140 символов.'
 );
 
@@ -80,7 +79,7 @@ pristine.addValidator(
 const openUploadForm = () => {
   uploadOverlay.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown); // закрывает окно по нажатию клавиши Esc
-}
+};
 
 // функция закрывает форму загрузки
 const closeUploadForm = () => {
@@ -92,14 +91,9 @@ const closeUploadForm = () => {
   pristine.reset(); // очищаем ошибки и состояние валидации
 };
 
-uploadInput.addEventListener('change', (evt) => {
+uploadInput.addEventListener('change', () => {
   openUploadForm();
-})
-
-uploadForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-})
+});
 
 // закрывает форму загрузки по нажатию на крестик
 btnCloseUploadForm.addEventListener('click', (evt) => {
