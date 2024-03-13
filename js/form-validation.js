@@ -1,4 +1,4 @@
-import {isEscapeKey} from './util.js';
+import { isEscapeKey } from './util.js';
 
 const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
 const uploadInput = document.querySelector('.img-upload__input'); // поле для загрузки фотографии
@@ -6,7 +6,15 @@ const uploadOverlay = document.querySelector('.img-upload__overlay'); // мод�
 const hashtagInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
 const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
-const regex = /^#[a-zа-яё0-9]{1,19}$/i;
+
+const hashtagErrorMessages = {
+  1: `Хэш-тег должен начинаться с символа #.<br>
+    Хэш-тег не может состоять только из одного символа.<br>
+    Строка после решётки должна состоять из букв и чисел.<br>
+    Максимальная длина хэш-тега 20 символов.`,
+  2: 'Хэш-теги не должны повторяться.',
+  3: 'Нельзя указать больше пяти хэш-тегов.'
+};
 
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
@@ -29,44 +37,46 @@ const pristine = new Pristine(uploadForm, {
   errorTextClass: 'img-upload__field-wrapper--error',
 });
 
+// массив для запоминания всех ошибок в процессе валидации
+let hashtagErrorList = [];
+
 const validateHashtag = (value) => {
-  if (!value) {
-    return true; // проверка на пустое значение
-  }
+  const regex = /^#[a-zа-яё0-9]{1,19}$/i;
+  hashtagErrorList = [];
   const hashtags = value.trim().split(' ');
 
   // удаление строк, состоящих только из пробелов
   const hashtagsFiltered = hashtags.filter((hashtag) => hashtag.trim() !== '');
 
-  // проверка на максимальное количество хэштегов
-  if (hashtagsFiltered.length > 5) {
-    return false;
+  // проверка на правильный формат хэштега
+  for (const hashtag of hashtagsFiltered) {
+    if (!regex.test(hashtag)) {
+      hashtagErrorList.push(1);
+    }
   }
 
   // проверка на повторяющиеся хэштеги
   const uniqueHashtags = new Set(hashtagsFiltered);
   if (hashtagsFiltered.length !== uniqueHashtags.size) {
-    return false;
+    hashtagErrorList.push(2);
   }
 
-  // проверка на правильный формат хэштега
-  for (const hashtag of hashtagsFiltered) {
-    if (!regex.test(hashtag)) {
-      return false;
-    }
+  // проверка на максимальное количество хэштегов
+  if (hashtagsFiltered.length > 5) {
+    hashtagErrorList.push(3);
   }
-  return true;
+
+  // если в переменной hashtagErrorList есть данные, это означает, что в процессе валидации были найдены ошибки
+  return hashtagErrorList.length === 0;
 };
+
+// возвращаем текст первой ошибки из массива
+const showErrorMessage = () => hashtagErrorMessages[hashtagErrorList[0]];
 
 pristine.addValidator(
   hashtagInput,
   validateHashtag,
-  `Хэш-тег должен начинаться с символа #. <br>
-  Хеш-тег не может состоять только из одной решётки. <br>
-  Строка после решётки должна состоять из букв и чисел. <br>
-  Максимальная длина хэш-тега 20 символов. <br>
-  Хэш-теги не должны повторяться. <br>
-  Нельзя указать больше пяти хэш-тегов.`
+  showErrorMessage
 );
 
 pristine.addValidator(
