@@ -686,9 +686,9 @@ main {
   width: 450px;
 
   margin: 0 auto;
-  margin-bottom: 20px;
+  /*margin-bottom: 20px;*/
   padding: 5px 10px;
-
+  font-size: 14px;
   font-family: "Open Sans", "Arial", sans-serif;
   font-weight: 400;
   color: #000000;
@@ -701,8 +701,9 @@ main {
   height: 100px;
 
   margin: 0 auto;
+  margin-top: 20px;
   padding: 15px 10px;
-
+  font-size: 14px;
   font-family: "Open Sans", "Arial", sans-serif;
   font-weight: 400;
   color: #000000;
@@ -719,6 +720,9 @@ main {
   position: relative;
 }
 
+.img-upload__field-wrapper--error:nth-child(2) {
+  margin-top: 0;
+}
 
 /**
  * Кнопка для отправки изображения
