@@ -1,1 +1,2 @@
-import './drawing-full-size-image';
+import './drawing-full-size-image.js';
+import './form-validation.js';
