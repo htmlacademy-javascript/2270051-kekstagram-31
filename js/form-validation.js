@@ -6,6 +6,7 @@ const uploadOverlay = document.querySelector('.img-upload__overlay'); // мод�
 const hashtagInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
 const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
+const btnUploadSubmit = document.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
 
 const hashtagErrorMessages = {
   1: `Хэш-тег должен начинаться с символа #.<br>
@@ -40,6 +41,7 @@ const pristine = new Pristine(uploadForm, {
 // массив для запоминания всех ошибок в процессе валидации
 let hashtagErrorList = [];
 
+// функция валидации хештегов, которая передаётся в библиотеку Pristine
 const validateHashtag = (value) => {
   const regex = /^#[a-zа-яё0-9]{1,19}$/i;
   hashtagErrorList = [];
@@ -67,7 +69,30 @@ const validateHashtag = (value) => {
   }
 
   // если в переменной hashtagErrorList есть данные, это означает, что в процессе валидации были найдены ошибки
-  return hashtagErrorList.length === 0;
+  if (hashtagErrorList.length === 0) {
+    const err = pristine.getErrors(commentInput);
+    if (err === undefined || err.length === 0) { // проверка, есть ли ошибка в блоке комментариев
+      btnUploadSubmit.disabled = false; // делаем кнопку "Опубликовать" доступной, если нигде нет ошибок
+    }
+    return true;
+  } else {
+    btnUploadSubmit.disabled = true;
+    return false;
+  }
+};
+
+// функция валидации комментариев, которая передаётся в библиотеку Pristine
+const validateComment = (value) => {
+  if (value.length > 140) {
+    btnUploadSubmit.disabled = true;
+    return false;
+  } else {
+    const err = pristine.getErrors(hashtagInput);
+    if (err === undefined || err.length === 0) { // проверка, есть ли ошибка в блоке хэштегов
+      btnUploadSubmit.disabled = false; // делаем кнопку "Опубликовать" доступной, если нигде нет ошибок
+    }
+    return true;
+  }
 };
 
 // возвращаем текст первой ошибки из массива
@@ -81,12 +106,13 @@ pristine.addValidator(
 
 pristine.addValidator(
   commentInput,
-  (value) => value.length <= 140,
+  validateComment,
   'Комментарий не может содержать более 140 символов.'
 );
 
 // функция открывает форму загрузки
 const openUploadForm = () => {
+  document.body.classList.add('modal-open');
   uploadOverlay.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown); // закрывает окно по нажатию клавиши Esc
 };
@@ -97,6 +123,7 @@ const closeUploadForm = () => {
   uploadInput.value = '';
   hashtagInput.value = '';
   commentInput.value = '';
+  document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown); // удаляем обработчик нажатия клавиши Esc
   pristine.reset(); // очищаем ошибки и состояние валидации
 };
