@@ -1,4 +1,5 @@
 import { isEscapeKey } from './util.js';
+import { setScale, defaultScale, setEffect, defaultEffect } from './edit-image.js';
 
 const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
 const uploadInput = document.querySelector('.img-upload__input'); // поле для загрузки фотографии
@@ -112,6 +113,9 @@ pristine.addValidator(
 
 // функция открывает форму загрузки
 const openUploadForm = () => {
+  document.querySelector('#effect-none').checked = true; // выбираем radio button с оригинальным эффектом
+  setScale(defaultScale); // установка дефолтного масштаба изображения
+  setEffect(defaultEffect); // установка дефолтного эффекта изображения
   document.body.classList.add('modal-open');
   uploadOverlay.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown); // закрывает окно по нажатию клавиши Esc
