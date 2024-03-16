@@ -1,9 +1,3 @@
-// const log = console.log;
-
-// пока что сделала попап всегда видимым
-// const uploadOverlay = document.querySelector('.img-upload__overlay');
-// uploadOverlay.classList.remove('hidden');
-
 const photoEffects = {
   CHROME: 'chrome',
   SEPIA: 'sepia',
@@ -60,7 +54,7 @@ noUiSlider.create(effectSlider, {
     min: 0,
     max: 100,
   },
-  start: 50,
+  start: 100,
   step: 1,
   connect: 'lower',
 });
@@ -98,6 +92,7 @@ const setEffect = (effect, value) => {
 // обработчик события для переключения эффектов
 effectsList.addEventListener('change', (evt) => {
   const effect = evt.target.value;
+  effectSlider.noUiSlider.set(100);
   setEffect(effect, 100);
 });
 
@@ -108,5 +103,3 @@ effectSlider.noUiSlider.on('update', (values, handle) => {
 });
 
 export { setScale, defaultScale, setEffect, defaultEffect };
-
-
