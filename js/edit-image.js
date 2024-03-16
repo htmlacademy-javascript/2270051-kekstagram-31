@@ -4,6 +4,15 @@
 // const uploadOverlay = document.querySelector('.img-upload__overlay');
 // uploadOverlay.classList.remove('hidden');
 
+const photoEffects = {
+  CHROME: 'chrome',
+  SEPIA: 'sepia',
+  MARVIN: 'marvin',
+  PHOBOS: 'phobos',
+  HEAT: 'heat',
+  ORIGINAL: 'none'
+};
+
 const scaleValue = document.querySelector('.scale__control--value'); // масштаб картинки в процентах
 const btnScaleMinus = document.querySelector('.scale__control--smaller'); // кнопка "-"
 const btnScalePlus = document.querySelector('.scale__control--bigger'); // кнопка "+"
@@ -19,8 +28,8 @@ const defaultScale = 100; // начальное значение масштаб�
 const stepScale = 25; // шаг изменения масштаба
 let currentScale; // текущее значение масштаба
 
-// const defaultEffect = 'none'; // начальный эффект "Оригинал"
-let currentEffect = 'none'; // текущий эффект
+const defaultEffect = photoEffects.ORIGINAL; // начальный эффект "Оригинал"
+let currentEffect; // текущий эффект
 
 // функция для установки масштаба изображения
 const setScale = (scale) => {
@@ -56,61 +65,48 @@ noUiSlider.create(effectSlider, {
   connect: 'lower',
 });
 
-// функция для применения эффекта к картинке
-const applyEffect = (effect, value) => {
-  if (effect === 'chrome') {
-    imgPreview.style.filter = `grayscale(${value / 100})`;
-  } else if (effect === 'sepia') {
-    imgPreview.style.filter = `sepia(${value / 100})`;
-  } else if (effect === 'marvin') {
-    imgPreview.style.filter = `invert(${value}%)`;
-  } else if (effect === 'phobos') {
-    imgPreview.style.filter = `blur(${value / 100 * 3}px)`;
-  } else if (effect === 'heat') {
-    imgPreview.style.filter = `brightness(${value / 100 * 2 + 1})`;
-  } else {
-    imgPreview.style.filter = '';
-  }
-};
-
-// функция для обновления уровня эффекта
-const updateEffectLevel = (effect, value) => {
-  effectValue.value = value;
-  applyEffect(effect, value);
-};
-
-// функция для сброса уровня эффекта
-const resetEffectLevel = () => {
-  effectValue.value = 100;
-  applyEffect(currentEffect, 100);
-};
-
-// функция для обновления эффекта
-const updateEffect = (effect) => {
+// функция для установки эффекта и степени насыщенности к картинке
+const setEffect = (effect, value) => {
   currentEffect = effect;
-  if (effect === 'none') {
-    imgEffectLevel.classList.add('hidden');
-    resetEffectLevel();
-  } else {
+  effectValue.value = value;
+  switch (effect) {
+    case photoEffects.CHROME:
+      imgPreview.style.filter = `grayscale(${value / 100})`;
+      break;
+    case photoEffects.SEPIA:
+      imgPreview.style.filter = `sepia(${value / 100})`;
+      break;
+    case photoEffects.MARVIN:
+      imgPreview.style.filter = `invert(${value}%)`;
+      break;
+    case photoEffects.PHOBOS:
+      imgPreview.style.filter = `blur(${value / 100 * 3}px)`;
+      break;
+    case photoEffects.HEAT:
+      imgPreview.style.filter = `brightness(${value / 100 * 2 + 1})`;
+      break;
+    case photoEffects.ORIGINAL:
+      imgEffectLevel.classList.add('hidden');
+      imgPreview.style.filter = '';
+      break;
+  }
+  if (effect !== photoEffects.ORIGINAL) {
     imgEffectLevel.classList.remove('hidden');
-    resetEffectLevel();
   }
 };
 
 // обработчик события для переключения эффектов
 effectsList.addEventListener('change', (evt) => {
   const effect = evt.target.value;
-  updateEffect(effect);
+  setEffect(effect, 100);
 });
 
 // обработчик события для изменения уровня эффекта
 effectSlider.noUiSlider.on('update', (values, handle) => {
   const value = values[handle];
-  updateEffectLevel(currentEffect, value);
+  setEffect(currentEffect, value);
 });
 
-updateEffect(currentEffect);
-
-export { setScale, defaultScale };
+export { setScale, defaultScale, setEffect, defaultEffect };
 
 
