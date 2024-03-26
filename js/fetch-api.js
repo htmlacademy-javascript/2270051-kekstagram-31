@@ -1,6 +1,12 @@
 import { isEscapeKey } from './util.js';
+import { btnUploadSubmit } from './form-validation.js';
 
 const SERVER_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
+
+const submitButtonText = {
+  IDLE: 'Опубликовать', // начальное состояние кнопки
+  SENDING: 'Публикую...'
+};
 
 // общая функция для создания и показа сообщения
 const showMessage = (templateId, closeButtonSelector) => {
@@ -10,26 +16,27 @@ const showMessage = (templateId, closeButtonSelector) => {
 
   // обработчик клика по произвольной области экрана или нажатия клавиши Esc
   const clickHandler = (evt) => {
+    evt.stopPropagation(); // предотвращаем всплытие события
     if (evt.type === 'click' || (evt.type === 'keydown' && isEscapeKey(evt))) {
       element.remove();
-      document.removeEventListener('click', clickHandler);
-      document.removeEventListener('keydown', clickHandler);
+      document.body.removeEventListener('click', clickHandler);
+      document.body.removeEventListener('keydown', clickHandler);
     }
   };
 
   // обработчик клика по кнопке закрытия
   if (closeButton) {
     closeButton.addEventListener('click', (evt) => {
-      evt.stopPropagation();
+      evt.stopPropagation(); // предотвращаем всплытие события
       element.remove();
-      document.removeEventListener('click', clickHandler);
-      document.removeEventListener('keydown', clickHandler);
+      document.body.removeEventListener('click', clickHandler);
+      document.body.removeEventListener('keydown', clickHandler);
     });
   }
 
   // добавляем обработчик событий клика и нажатия клавиши Esc
-  document.addEventListener('click', clickHandler);
-  document.addEventListener('keydown', clickHandler);
+  document.body.addEventListener('click', clickHandler);
+  document.body.addEventListener('keydown', clickHandler);
 
   // добавляем сообщение в конец body
   document.body.appendChild(element);
@@ -88,7 +95,10 @@ const sendData = async (formElement) => {
   } catch (error) {
     showErrorSentMessage();
     throw new Error(`Ошибка отправки данных: ${error.message}`);
+  } finally {
+    btnUploadSubmit.disabled = false;
+    btnUploadSubmit.textContent = submitButtonText.IDLE;
   }
 };
 
-export { getData, sendData };
+export { submitButtonText, getData, sendData };
