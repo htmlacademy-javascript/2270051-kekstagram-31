@@ -1,15 +1,49 @@
-import {isEscapeKey} from './util.js';
+import { isEscapeKey } from './util.js';
 
-const SERVER_URL = 'https://31.javascript.htmlacademy.pro/kekstagra';
+const SERVER_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
 
-// функция для отображения сообщения об ошибке при загрузке данных с сервера
+// общая функция для создания и показа сообщения
+const showMessage = (templateId, closeButtonSelector) => {
+  const template = document.querySelector(templateId).content.querySelector(`.${templateId.slice(1)}`);
+  const element = template.cloneNode(true);
+  const closeButton = element.querySelector(closeButtonSelector);
+
+  // обработчик клика по произвольной области экрана или нажатия клавиши Esc
+  const clickHandler = (evt) => {
+    if (evt.type === 'click' || (evt.type === 'keydown' && isEscapeKey(evt))) {
+      element.remove();
+      document.removeEventListener('click', clickHandler);
+      document.removeEventListener('keydown', clickHandler);
+    }
+  };
+
+  // обработчик клика по кнопке закрытия
+  if (closeButton) {
+    closeButton.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+      element.remove();
+      document.removeEventListener('click', clickHandler);
+      document.removeEventListener('keydown', clickHandler);
+    });
+  }
+
+  // добавляем обработчик событий клика и нажатия клавиши Esc
+  document.addEventListener('click', clickHandler);
+  document.addEventListener('keydown', clickHandler);
+
+  // добавляем сообщение в конец body
+  document.body.appendChild(element);
+};
+
+// функция для показа сообщения об ошибке при загрузке данных с сервера
 const showErrorMessage = () => {
-  const errorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
-  const errorElement = errorTemplate.cloneNode(true);
-  document.body.appendChild(errorElement);
-
+  showMessage('#data-error', null);
+  // удаление сообщения через 5 секунд
   setTimeout(() => {
-    errorElement.remove();
+    const errorElement = document.querySelector('.data-error');
+    if (errorElement) {
+      errorElement.remove();
+    }
   }, 5000);
 };
 
@@ -29,60 +63,12 @@ const getData = async () => {
 
 // функция для показа сообщения об ошибке при отправке данных на сервер
 const showErrorSentMessage = () => {
-  const errorTemplate = document.querySelector('#error').content.querySelector('.error');
-  const errorElement = errorTemplate.cloneNode(true);
-  const errorButton = errorElement.querySelector('.error__button');
-
-  // обработчик клика по кнопке "Попробовать ещё раз"
-  errorButton.addEventListener('click', () => {
-    errorElement.remove();
-  });
-
-  // обработчик нажатия клавиши Esc
-  document.addEventListener('keydown', (evt) => {
-    if (isEscapeKey(evt) && errorElement.parentNode) {
-      evt.preventDefault();
-      errorElement.remove();
-    }
-  });
-
-  // обработчик клика по произвольной области экрана
-  document.addEventListener('click', (evt) => {
-    if (!errorElement.contains(evt.target) && errorElement.parentNode) {
-      errorElement.remove();
-    }
-  });
-
-  document.body.appendChild(errorElement);
+  showMessage('#error', '.error__button');
 };
 
 // функция для показа сообщения об успешной отправке данных на сервер
 const showSuccessSentMessage = () => {
-  const successTemplate = document.querySelector('#success').content.querySelector('.success');
-  const successElement = successTemplate.cloneNode(true);
-  const successButton = successElement.querySelector('.success__button');
-
-  // обработчик клика по кнопке "Круто!"
-  successButton.addEventListener('click', () => {
-    successElement.remove();
-  });
-
-  // обработчик нажатия клавиши Esc
-  document.addEventListener('keydown', (evt) => {
-    if (isEscapeKey(evt) && successElement.parentNode) {
-      evt.preventDefault();
-      successElement.remove();
-    }
-  });
-
-  // обработчик клика по произвольной области экрана
-  document.addEventListener('click', (evt) => {
-    if (!successElement.contains(evt.target) && successElement.parentNode) {
-      successElement.remove();
-    }
-  });
-
-  document.body.appendChild(successElement);
+  showMessage('#success', '.success__button');
 };
 
 // асинхронная функция для загрузки данных на сервер
