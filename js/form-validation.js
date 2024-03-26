@@ -1,13 +1,15 @@
 import { isEscapeKey } from './util.js';
 import { setScale, defaultScale, setEffect, defaultEffect } from './edit-image.js';
+import { sendData, submitButtonText } from './fetch-api.js';
 
 const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
-const uploadInput = document.querySelector('.img-upload__input'); // поле для загрузки фотографии
-const uploadOverlay = document.querySelector('.img-upload__overlay'); // модальное окно редактирования фотографии
-const hashtagInput = document.querySelector('.text__hashtags');
-const commentInput = document.querySelector('.text__description');
+const uploadInput = uploadForm.querySelector('.img-upload__input'); // поле для загрузки фотографии
+const uploadOverlay = uploadForm.querySelector('.img-upload__overlay'); // модальное окно редактирования фотографии
+const hashtagInput = uploadForm.querySelector('.text__hashtags');
+const commentInput = uploadForm.querySelector('.text__description');
+const imgUploadPreview = uploadForm.querySelector('.img-upload__preview img'); // просмотр фото для загрузки
 const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
-const btnUploadSubmit = document.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
+const btnUploadSubmit = uploadForm.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
 
 const hashtagErrorMessages = {
   1: `Хэш-тег должен начинаться с символа #.<br>
@@ -111,6 +113,18 @@ pristine.addValidator(
   'Комментарий не может содержать более 140 символов.'
 );
 
+// функция подставляет загружаемое фото в форму предварительного просмотра
+const getPhotoPreview = (evt) => {
+  const file = evt.target.files[0]; // получаем первый файл, выбранный пользователем в input элементе
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imgUploadPreview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 // функция открывает форму загрузки
 const openUploadForm = () => {
   document.querySelector('#effect-none').checked = true; // выбираем radio button с оригинальным эффектом
@@ -132,7 +146,8 @@ const closeUploadForm = () => {
   pristine.reset(); // очищаем ошибки и состояние валидации
 };
 
-uploadInput.addEventListener('change', () => {
+uploadInput.addEventListener('change', (evt) => {
+  getPhotoPreview(evt);
   openUploadForm();
 });
 
@@ -141,3 +156,17 @@ btnCloseUploadForm.addEventListener('click', (evt) => {
   evt.preventDefault();
   closeUploadForm();
 });
+
+// обработчик отправки формы
+const onUploadFormSubmit = async (evt) => {
+  evt.preventDefault();
+  btnUploadSubmit.disabled = true;
+  btnUploadSubmit.textContent = submitButtonText.SENDING;
+  await sendData(evt.target);
+  closeUploadForm();
+};
+
+// установка обработчика отправки формы
+uploadForm.addEventListener('submit', onUploadFormSubmit);
+
+export { btnUploadSubmit };
