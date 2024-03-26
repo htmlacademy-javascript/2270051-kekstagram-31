@@ -14,8 +14,8 @@ let photos;
 // создаем фрагмент, в который сначала будем записывать фотографии
 const photosFragment = document.createDocumentFragment();
 
-getData().
-  then((jsonData) => {
+getData()
+  .then((jsonData) => {
     photos = jsonData;
     // пробегаем циклом по каждой фотографии и добавляем нужные данные
     photos.forEach((photo) => {
