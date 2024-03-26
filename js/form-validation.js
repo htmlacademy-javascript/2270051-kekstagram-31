@@ -1,5 +1,6 @@
 import { isEscapeKey } from './util.js';
 import { setScale, defaultScale, setEffect, defaultEffect } from './edit-image.js';
+import { sendData } from './fetch-api.js';
 
 const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
 const uploadInput = uploadForm.querySelector('.img-upload__input'); // поле для загрузки фотографии
@@ -155,3 +156,12 @@ btnCloseUploadForm.addEventListener('click', (evt) => {
   evt.preventDefault();
   closeUploadForm();
 });
+
+// обработчик отправки формы
+const onUploadFormSubmit = async (evt) => {
+  evt.preventDefault();
+  await sendData(evt.target);
+};
+
+// обработчик отправки формы
+uploadForm.addEventListener('submit', onUploadFormSubmit);
