@@ -1,6 +1,6 @@
 import {isEscapeKey} from './util.js';
 
-const SERVER_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
+const SERVER_URL = 'https://31.javascript.htmlacademy.pro/kekstagra';
 
 // функция для отображения сообщения об ошибке при загрузке данных с сервера
 const showErrorMessage = () => {
@@ -97,6 +97,7 @@ const sendData = async (formElement) => {
       throw new Error(`Ошибка отправки: ${response.status} ${response.statusText}`);
     }
     showSuccessSentMessage();
+    formElement.reset();
     return await response.json();
   } catch (error) {
     showErrorSentMessage();

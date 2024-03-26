@@ -161,6 +161,7 @@ btnCloseUploadForm.addEventListener('click', (evt) => {
 const onUploadFormSubmit = async (evt) => {
   evt.preventDefault();
   await sendData(evt.target);
+  closeUploadForm();
 };
 
 // обработчик отправки формы
