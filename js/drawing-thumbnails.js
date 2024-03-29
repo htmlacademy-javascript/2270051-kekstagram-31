@@ -2,10 +2,6 @@ import { getData } from './fetch-api.js';
 // получаем секцию для вставки фотографий
 const pictures = document.querySelector('.pictures');
 
-// делаем заголовок секции видимым
-const picturesTitle = pictures.querySelector('.pictures__title');
-picturesTitle.classList.remove('visually-hidden');
-
 // получаем шаблон секции для вставки фотографий
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
@@ -30,6 +26,9 @@ getData()
 
     // из фрагмента отрисовываем фотографии на страницу
     pictures.append(photosFragment);
+
+    // после завершения загрузки изображений с сервера показываем блок с фильтрами
+    document.querySelector('.img-filters').classList.remove('img-filters--inactive');
   });
 
 export { pictures, photos };
