@@ -20,6 +20,8 @@ const hashtagErrorMessages = {
   3: 'Нельзя указать больше пяти хэш-тегов.'
 };
 
+const FILE_TYPES = ['gif', 'jpeg', 'jpg', 'png'];
+
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -116,11 +118,13 @@ pristine.addValidator(
 // функция подставляет загружаемое фото в форму предварительного просмотра
 const getPhotoPreview = (evt) => {
   const file = evt.target.files[0]; // получаем первый файл, выбранный пользователем в input элементе
-  if (file) {
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+  if (matches) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.addEventListener('load', (e) => {
       imgUploadPreview.src = e.target.result;
-    };
+    });
     reader.readAsDataURL(file);
   }
 };
