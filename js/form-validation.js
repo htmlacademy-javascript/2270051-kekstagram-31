@@ -8,6 +8,7 @@ const uploadOverlay = uploadForm.querySelector('.img-upload__overlay'); // мо�
 const hashtagInput = uploadForm.querySelector('.text__hashtags');
 const commentInput = uploadForm.querySelector('.text__description');
 const imgUploadPreview = uploadForm.querySelector('.img-upload__preview img'); // просмотр фото для загрузки
+const effectsPreview = uploadForm.querySelectorAll('.effects__preview'); // маленькие превьюшки фото
 const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
 const btnUploadSubmit = uploadForm.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
 
@@ -20,7 +21,7 @@ const hashtagErrorMessages = {
   3: 'Нельзя указать больше пяти хэш-тегов.'
 };
 
-const FILE_TYPES = ['gif', 'jpeg', 'jpg', 'png'];
+const FILE_TYPES = ['.gif', '.jpeg', '.jpg', '.png', '.jfif'];
 
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
@@ -115,20 +116,6 @@ pristine.addValidator(
   'Комментарий не может содержать более 140 символов.'
 );
 
-// функция подставляет загружаемое фото в форму предварительного просмотра
-const getPhotoPreview = (evt) => {
-  const file = evt.target.files[0]; // получаем первый файл, выбранный пользователем в input элементе
-  const fileName = file.name.toLowerCase();
-  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
-  if (matches) {
-    const reader = new FileReader();
-    reader.addEventListener('load', (e) => {
-      imgUploadPreview.src = e.target.result;
-    });
-    reader.readAsDataURL(file);
-  }
-};
-
 // функция открывает форму загрузки
 const openUploadForm = () => {
   document.querySelector('#effect-none').checked = true; // выбираем radio button с оригинальным эффектом
@@ -145,14 +132,66 @@ const closeUploadForm = () => {
   uploadInput.value = '';
   hashtagInput.value = '';
   commentInput.value = '';
+  imgUploadPreview.src = '';
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown); // удаляем обработчик нажатия клавиши Esc
   pristine.reset(); // очищаем ошибки и состояние валидации
 };
 
+// функция для вывода ошибки о недопустимом формате файла
+const showFileTypeError = () => {
+  const template = document.querySelector('#data-error');
+  const errorElement = template.content.cloneNode(true);
+  const errorSection = errorElement.querySelector('.data-error');
+
+  // добавляем кастомный текст ошибки
+  const errorMessageElement = errorSection.querySelector('.data-error__title');
+  if (errorMessageElement) {
+    errorMessageElement.textContent = 'Недопустимое расширение файла';
+  }
+
+  document.body.appendChild(errorSection);
+
+  // удаляем ошибку через 5 секунд
+  setTimeout(() => {
+    errorSection.remove();
+  }, 5000);
+};
+
+// функция подставляет загружаемое фото в форму предварительного просмотра
+const getPhotoPreview = (evt) => {
+  const file = evt.target.files[0]; // получаем первый файл, выбранный пользователем в input элементе
+  const reader = new FileReader();
+
+  reader.addEventListener('load', () => {
+    imgUploadPreview.src = reader.result; // отображаем загруженное изображение в окне предварительного просмотра
+    setScale(defaultScale);
+    setEffect(defaultEffect);
+
+    // устанавливаем фоновое изображение для маленьких превьюшек
+    effectsPreview.forEach((preview) => {
+      preview.style.backgroundImage = `url(${reader.result})`;
+    });
+  });
+
+  reader.readAsDataURL(file); // читаем файл как данные URL
+};
+
+// обработчик события change для поля ввода файлов
 uploadInput.addEventListener('change', (evt) => {
-  getPhotoPreview(evt);
-  openUploadForm();
+  const file = evt.target.files[0];
+  const fileName = file.name.toLowerCase();
+
+  // проверяем расширение файла
+  const isValidExtension = FILE_TYPES.some((extension) => fileName.endsWith(extension));
+
+  if (isValidExtension) {
+    getPhotoPreview(evt);
+    openUploadForm();
+  } else {
+    showFileTypeError(); // Выводим ошибку из шаблона
+    // alert('Недопустимое расширение файла. Пожалуйста, выберите файл с расширением .gif, .jpeg, .jpg, .png или .jfif.');
+  }
 });
 
 // закрывает форму загрузки по нажатию на крестик
