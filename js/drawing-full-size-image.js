@@ -11,6 +11,9 @@ const bigPictureCommentsList = bigPicture.querySelector('.social__comments'); //
 const bigPictureLoadMoreButton = bigPicture.querySelector('.comments-loader'); // блок загрузки новых комментариев
 const btnClosePicture = bigPicture.querySelector('.big-picture__cancel'); // крестик закрытия на большом изображении
 
+let onBigPictureLoadMoreButton; // переменная для обработчика нажатия "Загрузить еще"
+let shownCommentsCount = 0; // количество комментариев, которые были добавлены в последний раз
+
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -19,9 +22,6 @@ const onDocumentKeydown = (evt) => {
     closeBigPicture();
   }
 };
-
-let onBigPictureLoadMoreButton; // переменная для обработчика нажатия "Загрузить еще"
-let shownCommentsCount = 0; // количество комментариев, которые были добавлены в последний раз
 
 // функция для добавления комментариев
 const addComments = (photo) => {

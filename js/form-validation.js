@@ -23,6 +23,9 @@ const hashtagErrorMessages = {
 
 const FILE_TYPES = ['.gif', '.jpeg', '.jpg', '.png', '.jfif'];
 
+// массив для запоминания всех ошибок в процессе валидации
+let hashtagErrorList = [];
+
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -43,9 +46,6 @@ const pristine = new Pristine(uploadForm, {
   errorTextTag: 'div',
   errorTextClass: 'img-upload__field-wrapper--error',
 });
-
-// массив для запоминания всех ошибок в процессе валидации
-let hashtagErrorList = [];
 
 // функция валидации хештегов, которая передаётся в библиотеку Pristine
 const validateHashtag = (value) => {
@@ -189,8 +189,7 @@ uploadInput.addEventListener('change', (evt) => {
     getPhotoPreview(evt);
     openUploadForm();
   } else {
-    showFileTypeError(); // Выводим ошибку из шаблона
-    // alert('Недопустимое расширение файла. Пожалуйста, выберите файл с расширением .gif, .jpeg, .jpg, .png или .jfif.');
+    showFileTypeError(); // выводим ошибку из шаблона
   }
 });
 
