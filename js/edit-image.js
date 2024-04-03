@@ -20,9 +20,8 @@ const maxScale = 100; // максимальный масштаб
 const minScale = 25; // минимальный масштаб
 const defaultScale = 100; // начальное значение масштаба
 const stepScale = 25; // шаг изменения масштаба
-let currentScale; // текущее значение масштаба
-
 const defaultEffect = photoEffects.ORIGINAL; // начальный эффект "Оригинал"
+let currentScale; // текущее значение масштаба
 let currentEffect; // текущий эффект
 
 // функция для установки масштаба изображения
