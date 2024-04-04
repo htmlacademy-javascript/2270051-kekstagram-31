@@ -49,6 +49,7 @@ getData()
 
     // показываем блок с фильтрами после загрузки фотографий
     filters.classList.remove('img-filters--inactive');
+  }, () => {
   });
 
 export { pictures, photos, renderPhotos };

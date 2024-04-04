@@ -1,3 +1,7 @@
+const MAX_SCALE = 100; // максимальный масштаб
+const MIN_SCALE = 25; // минимальный масштаб
+const STEP_SCALE = 25; // шаг изменения масштаба
+
 const photoEffects = {
   CHROME: 'chrome',
   SEPIA: 'sepia',
@@ -10,17 +14,15 @@ const photoEffects = {
 const scaleValue = document.querySelector('.scale__control--value'); // масштаб картинки в процентах
 const btnScaleMinus = document.querySelector('.scale__control--smaller'); // кнопка "-"
 const btnScalePlus = document.querySelector('.scale__control--bigger'); // кнопка "+"
-const imgPreview = document.querySelector('.img-upload__preview'); // превью загружаемой картинки
+const imgPreview = document.querySelector('.img-upload__preview img'); // превью загружаемой картинки
 const imgEffectLevel = document.querySelector('.img-upload__effect-level'); // контейнер слайдера
 const effectValue = imgEffectLevel.querySelector('.effect-level__value'); // поле для записи интенсивности эффекта на картинке
 const effectSlider = imgEffectLevel.querySelector('.effect-level__slider'); // ползунок слайдера
 const effectsList = document.querySelector('.effects__list'); // иконки с эффектами
 
-const maxScale = 100; // максимальный масштаб
-const minScale = 25; // минимальный масштаб
 const defaultScale = 100; // начальное значение масштаба
-const stepScale = 25; // шаг изменения масштаба
 const defaultEffect = photoEffects.ORIGINAL; // начальный эффект "Оригинал"
+
 let currentScale; // текущее значение масштаба
 let currentEffect; // текущий эффект
 
@@ -28,24 +30,24 @@ let currentEffect; // текущий эффект
 const setScale = (scale) => {
   currentScale = scale;
   scaleValue.value = `${currentScale}%`;
-  imgPreview.style.transform = `scale(${currentScale / maxScale})`;
+  imgPreview.style.transform = `scale(${currentScale / MAX_SCALE})`;
 };
 
 // функция для изменения масштаба изображения
 const changeScale = (deltaScale) => {
   let tempScale = currentScale;
   tempScale += deltaScale;
-  if (tempScale > maxScale) {
-    tempScale = maxScale;
-  } else if (tempScale < minScale) {
-    tempScale = minScale;
+  if (tempScale > MAX_SCALE) {
+    tempScale = MAX_SCALE;
+  } else if (tempScale < MIN_SCALE) {
+    tempScale = MIN_SCALE;
   }
   setScale(tempScale);
 };
 
 // обработчики событий на кнопки "+" и "-"
-btnScalePlus.addEventListener('click', () => changeScale(stepScale));
-btnScaleMinus.addEventListener('click', () => changeScale(-stepScale));
+btnScalePlus.addEventListener('click', () => changeScale(STEP_SCALE));
+btnScaleMinus.addEventListener('click', () => changeScale(-STEP_SCALE));
 
 // инициализация слайдера
 noUiSlider.create(effectSlider, {

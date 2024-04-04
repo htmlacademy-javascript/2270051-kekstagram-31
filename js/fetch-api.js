@@ -15,12 +15,12 @@ const showMessage = (templateId, closeButtonSelector) => {
   const closeButton = element.querySelector(closeButtonSelector);
 
   // обработчик клика по произвольной области экрана или нажатия клавиши Esc
-  const clickHandler = (evt) => {
+  const onDocumentKeydown = (evt) => {
     evt.stopPropagation(); // предотвращаем всплытие события
     if (evt.type === 'click' || (evt.type === 'keydown' && isEscapeKey(evt))) {
       element.remove();
-      document.body.removeEventListener('click', clickHandler);
-      document.body.removeEventListener('keydown', clickHandler);
+      document.body.removeEventListener('click', onDocumentKeydown);
+      document.body.removeEventListener('keydown', onDocumentKeydown);
     }
   };
 
@@ -29,14 +29,14 @@ const showMessage = (templateId, closeButtonSelector) => {
     closeButton.addEventListener('click', (evt) => {
       evt.stopPropagation(); // предотвращаем всплытие события
       element.remove();
-      document.body.removeEventListener('click', clickHandler);
-      document.body.removeEventListener('keydown', clickHandler);
+      document.body.removeEventListener('click', onDocumentKeydown);
+      document.body.removeEventListener('keydown', onDocumentKeydown);
     });
   }
 
   // добавляем обработчик событий клика и нажатия клавиши Esc
-  document.body.addEventListener('click', clickHandler);
-  document.body.addEventListener('keydown', clickHandler);
+  document.body.addEventListener('click', onDocumentKeydown);
+  document.body.addEventListener('keydown', onDocumentKeydown);
 
   // добавляем сообщение в конец body
   document.body.appendChild(element);
@@ -59,7 +59,7 @@ const getData = async () => {
   try {
     const response = await fetch(`${SERVER_URL}/data`);
     if (!response.ok) {
-      throw new Error(`Ошибка загрузки: ${response.status} ${response.statusText}`);
+      throw new Error();
     }
     return await response.json();
   } catch (error) {
@@ -94,7 +94,7 @@ const sendData = async (formElement) => {
     return await response.json();
   } catch (error) {
     showErrorSentMessage();
-    throw new Error(`Ошибка отправки данных: ${error.message}`);
+    throw error;
   } finally {
     btnUploadSubmit.disabled = false;
     btnUploadSubmit.textContent = submitButtonText.IDLE;

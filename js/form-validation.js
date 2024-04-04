@@ -2,15 +2,7 @@ import { isEscapeKey } from './util.js';
 import { setScale, defaultScale, setEffect, defaultEffect } from './edit-image.js';
 import { sendData, submitButtonText } from './fetch-api.js';
 
-const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
-const uploadInput = uploadForm.querySelector('.img-upload__input'); // поле для загрузки фотографии
-const uploadOverlay = uploadForm.querySelector('.img-upload__overlay'); // модальное окно редактирования фотографии
-const hashtagInput = uploadForm.querySelector('.text__hashtags');
-const commentInput = uploadForm.querySelector('.text__description');
-const imgUploadPreview = uploadForm.querySelector('.img-upload__preview img'); // просмотр фото для загрузки
-const effectsPreview = uploadForm.querySelectorAll('.effects__preview'); // маленькие превьюшки фото
-const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
-const btnUploadSubmit = uploadForm.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
+const FILE_TYPES = ['.gif', '.jpeg', '.jpg', '.png', '.jfif'];
 
 const hashtagErrorMessages = {
   1: `Хэш-тег должен начинаться с символа #.<br>
@@ -21,10 +13,18 @@ const hashtagErrorMessages = {
   3: 'Нельзя указать больше пяти хэш-тегов.'
 };
 
-const FILE_TYPES = ['.gif', '.jpeg', '.jpg', '.png', '.jfif'];
+const uploadForm = document.querySelector('.img-upload__form'); // форма отправки информации о фотографии на сервер
+const uploadInput = uploadForm.querySelector('.img-upload__input'); // поле для загрузки фотографии
+const uploadOverlay = uploadForm.querySelector('.img-upload__overlay'); // модальное окно редактирования фотографии
+const hashtagInput = uploadForm.querySelector('.text__hashtags');
+const commentInput = uploadForm.querySelector('.text__description');
+const imgUploadPreview = uploadForm.querySelector('.img-upload__preview img'); // просмотр фото для загрузки
+const effectsPreview = uploadForm.querySelectorAll('.effects__preview'); // маленькие превьюшки фото
+const btnCloseUploadForm = uploadForm.querySelector('.img-upload__cancel'); // крестик закрытия на большом изображении
+const btnUploadSubmit = uploadForm.querySelector('.img-upload__submit'); // кнопка "Опубликовать"
 
 // массив для запоминания всех ошибок в процессе валидации
-let hashtagErrorList = [];
+let hashtagsErrorList = [];
 
 // обработчик нажатия клавиши Esc
 const onDocumentKeydown = (evt) => {
@@ -50,7 +50,7 @@ const pristine = new Pristine(uploadForm, {
 // функция валидации хештегов, которая передаётся в библиотеку Pristine
 const validateHashtag = (value) => {
   const regex = /^#[a-zа-яё0-9]{1,19}$/i;
-  hashtagErrorList = [];
+  hashtagsErrorList = [];
   const hashtags = value.trim().split(' ');
 
   // удаление строк, состоящих только из пробелов
@@ -59,23 +59,23 @@ const validateHashtag = (value) => {
   // проверка на правильный формат хэштега
   for (const hashtag of hashtagsFiltered) {
     if (!regex.test(hashtag)) {
-      hashtagErrorList.push(1);
+      hashtagsErrorList.push(1);
     }
   }
 
   // проверка на повторяющиеся хэштеги
   const uniqueHashtags = new Set(hashtagsFiltered);
   if (hashtagsFiltered.length !== uniqueHashtags.size) {
-    hashtagErrorList.push(2);
+    hashtagsErrorList.push(2);
   }
 
   // проверка на максимальное количество хэштегов
   if (hashtagsFiltered.length > 5) {
-    hashtagErrorList.push(3);
+    hashtagsErrorList.push(3);
   }
 
-  // если в переменной hashtagErrorList есть данные, это означает, что в процессе валидации были найдены ошибки
-  if (hashtagErrorList.length === 0) {
+  // если в переменной hashtagsErrorList есть данные, это означает, что в процессе валидации были найдены ошибки
+  if (hashtagsErrorList.length === 0) {
     const err = pristine.getErrors(commentInput);
     if (err === undefined || err.length === 0) { // проверка, есть ли ошибка в блоке комментариев
       btnUploadSubmit.disabled = false; // делаем кнопку "Опубликовать" доступной, если нигде нет ошибок
@@ -102,7 +102,7 @@ const validateComment = (value) => {
 };
 
 // возвращаем текст первой ошибки из массива
-const showErrorMessage = () => hashtagErrorMessages[hashtagErrorList[0]];
+const showErrorMessage = () => hashtagErrorMessages[hashtagsErrorList[0]];
 
 pristine.addValidator(
   hashtagInput,
@@ -204,8 +204,9 @@ const onUploadFormSubmit = async (evt) => {
   evt.preventDefault();
   btnUploadSubmit.disabled = true;
   btnUploadSubmit.textContent = submitButtonText.SENDING;
-  await sendData(evt.target);
-  closeUploadForm();
+  sendData(evt.target).then(() => {
+    closeUploadForm();
+  }, () => {});
 };
 
 // установка обработчика отправки формы
