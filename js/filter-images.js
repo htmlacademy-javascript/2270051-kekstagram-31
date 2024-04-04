@@ -20,12 +20,12 @@ const getRandomPhotos = (count) => {
 // функция для получения фотографий, отсортированных по количеству комментариев
 const getDiscussedPhotos = () => {
   const discussedPhotos = [...photos];
-  discussedPhotos.sort((a, b) => b.comments.length - a.comments.length);
+  discussedPhotos.sort((arrayElementA, arrayElementB) => arrayElementB.comments.length - arrayElementA.comments.length);
   return discussedPhotos;
 };
 
 // функция для обработки фильтрации фотографий
-const handleFilterChange = (filterType) => {
+const onFilterClick = (filterType) => {
   // если нажата активная кнопка фильтра, ничего не делаем
   if (filterType === currentActiveFilter) {
     return;
@@ -61,6 +61,6 @@ const handleFilterChange = (filterType) => {
 };
 
 // обработчики событий для фильтров
-filterDefault.addEventListener('click', () => handleFilterChange('default'));
-filterRandom.addEventListener('click', () => handleFilterChange('random'));
-filterDiscussed.addEventListener('click', () => handleFilterChange('discussed'));
+filterDefault.addEventListener('click', () => onFilterClick('default'));
+filterRandom.addEventListener('click', () => onFilterClick('random'));
+filterDiscussed.addEventListener('click', () => onFilterClick('discussed'));
