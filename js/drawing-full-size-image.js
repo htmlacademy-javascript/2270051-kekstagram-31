@@ -11,7 +11,7 @@ const bigPictureCommentsList = bigPicture.querySelector('.social__comments'); //
 const bigPictureLoadMoreButton = bigPicture.querySelector('.comments-loader'); // блок загрузки новых комментариев
 const btnClosePicture = bigPicture.querySelector('.big-picture__cancel'); // крестик закрытия на большом изображении
 
-let onBigPictureLoadMoreButton; // переменная для обработчика нажатия "Загрузить еще"
+let onLoadMoreButtonClick; // переменная для обработчика нажатия "Загрузить еще"
 let shownCommentsCount = 0; // количество комментариев, которые были добавлены в последний раз
 
 // обработчик нажатия клавиши Esc
@@ -67,12 +67,12 @@ const openBigPicture = (photo) => {
   bigPictureLikesCount.textContent = photo.likes;
   bigPictureCommentTotalCount.textContent = photo.comments.length.toString();
 
-  onBigPictureLoadMoreButton = () => {
+  onLoadMoreButtonClick = () => {
     addComments(photo);
   };
 
   addComments(photo); // добавляем первые 5 комментариев
-  bigPictureLoadMoreButton.addEventListener('click', onBigPictureLoadMoreButton); // обработчик нажатия на кнопку "Загрузить ещё"
+  bigPictureLoadMoreButton.addEventListener('click', onLoadMoreButtonClick); // обработчик нажатия на кнопку "Загрузить ещё"
   document.addEventListener('keydown', onDocumentKeydown); // закрывает окно с большой картинкой по нажатию клавиши Esc
 };
 
@@ -81,7 +81,7 @@ const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   bigPictureCommentsList.textContent = '';
   document.body.classList.remove('modal-open');
-  bigPictureLoadMoreButton.removeEventListener('click', onBigPictureLoadMoreButton); // удаляем обработчик нажатия на кнопку "Загрузить ещё"
+  bigPictureLoadMoreButton.removeEventListener('click', onLoadMoreButtonClick); // удаляем обработчик нажатия на кнопку "Загрузить ещё"
   document.removeEventListener('keydown', onDocumentKeydown); // удаляем обработчик нажатия клавиши Esc
   shownCommentsCount = 0;
 };
